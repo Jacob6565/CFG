@@ -1,10 +1,19 @@
 grammar CFG;
 //Lexer rules
-RobotProperty       : 'GunColor' | 'BodyColor' | 'RadarColor' | 'RobotType' ;
+//Robocode robot terminals
+RobotProperty       : 'GunColor' | 'BodyColor' | 'RadarColor' ;
 RobotTypeVal	    : 'advancedRobot' | 'juniorRobot' | 'robot' ;
 ColorVal	        : 'red' | 'blue' | 'yellow' | 'green' | 'black' | 'white' ;
 Type		        : 'number' | 'text' | 'bool' | 'number[]'
-                    |'text[]' | 'bool[]' ;
+                    |'text[]' | 'bool[]'
+                    ;
+RobotProperties     : 'RobotProperties'
+                    ;
+RobotName           : 'RobotName'
+                    ;
+RobotType           : 'RobotType';
+//Events types and whens
+When                : 'when';
 EType 		        : 'BattleEndedEvent' | 'BulletHitBulletEvent'
                     | 'BulletHitEvent' | 'BulletMissedEvent' | 'CustomEvent'
                     | 'DeathEvent' | 'HitByBulletEvent' | 'HitRobotEvent'
@@ -19,6 +28,7 @@ WhiteSpace          : [ \r\n\t]+ -> skip;
 Val	                : [-]? [0-9]+ ('.' [0-9]+)?
                     | '"' [\u0020-\u0021\u0023-\u007E]* '"'
                     ;
+// mathematical terminals
 AdditiveOp	        : Plus | Minus ;
 MultiOp             : Times | Divide | Modulo ;
 Plus                : '+';
@@ -26,49 +36,79 @@ Minus               : '-';
 Times               : '*';
 Divide              : '/';
 Modulo              : '%';
-BoolVal             : TRUE | FALSE
-                    ;
+BoolVal             : TRUE | FALSE ;
 RelativeOp		    : '<' | '>' | '<=' | '>=' | '!=' | '==' ;
 BoolOp	            : 'and' | 'or' ;
 TRUE                : 'true' ;
 FALSE               : 'false' ;
-Name                : [A-z][A-z0-9]*;
+Hat                 : '^';
 
+// Parenthesis, scopes brackets and other notation
+Scopel              : '{';
+Scoper              : '}';
+Comma               : ',';
+Colon               : ':';
+SemiColon           : ';';
+Dot                 : '.';
+Squarel             : '[';
+Squarer             : ']';
+Parenl              : '(';
+Parenr              : ')';
+
+//ControlStructures and necessities
+For                 : 'for';
+Upto                : 'upto';
+Downto              : 'downto';
+While               : 'while';
+If                  : 'if';
+Elseif              : 'else if';
+Else                : 'else';
+Strategy            : 'strategy';
+Routine             : 'routine';
+
+//Others
+Void                : 'void';
+Assign              : '=';
+Return              : 'return';
+Not                 : '!';
+Condition           : 'condition';
+
+Name                : [A-z][A-z0-9]*;
 
 //Parser rules
 prog                : robotDcl (dcl | funcDcl | strategydcl | conditionDcl)*
                     ;
-strategydcl     	: 'strategy' id '(' fParamList? ')' '{' (dcl | stmt | routine | when)* '}'
+strategydcl     	: Strategy id Parenl fParamList? Parenr Scopel (dcl | stmt | routine | when)* Scoper
                     ;
-funcDcl	            : funcType id '(' fParamList? ')' funcBody
+funcDcl	            : funcType id Parenl fParamList? Parenr funcBody
                     ;
-funcType	        : 'void'
+funcType	        : Void
                     | Type
                     ;
-funcBody 	        :'{' (dcl | stmt)* '}'
+funcBody 	        :Scopel (dcl | stmt)* Scoper
                     ;
 fParamList          : Type id
-                    | Type id ',' fParamList
+                    | Type id Comma fParamList
                     ;
-robotDcl 	        : 'RobotProperties' '{' robotDclBody '}'
+robotDcl 	        : RobotProperties Scopel robotDclBody Scoper
                     ;
-robotDclBody        : 'RobotName' ':' id ';' 'RobotType' ':' RobotTypeVal ';' (RobotProperty ':' ColorVal ';')*
+robotDclBody        : RobotName Colon id SemiColon RobotType Colon RobotTypeVal SemiColon (RobotProperty Colon ColorVal SemiColon)*
                     ;
-dcl                 : Type id '=' expr ';'
-                    | Type id (',' id)* ';'
+dcl                 : Type id Assign expr SemiColon
+                    | Type id (Comma id)* SemiColon
                     ;
-stmt		        : assignStmt ';'
-                    | funcCall ';'
+stmt		        : assignStmt SemiColon
+                    | funcCall SemiColon
                     | ctrlStruct
-                    | 'return' expr ';'
+                    | Return expr SemiColon
                     ;
-routine	            : 'routine' '(' (Val | id)? ')' funcBody
+routine	            : Routine Parenl (Val | id)? Parenr funcBody
                     ;
-when		        : 'when' '(' (eParam | id id) ')' funcBody
+when		        : When Parenl (eParam | id id) Parenr funcBody
                     ;
-expr                : '(' expr ')'
-                    | '!' expr
-                    | <assoc=right> expr '^' expr
+expr                : Parenl expr Parenr
+                    | Not expr
+                    | <assoc=right> expr Hat expr
                     | expr MultiOp expr
                     | expr AdditiveOp expr
                     | expr RelativeOp expr
@@ -78,27 +118,27 @@ expr                : '(' expr ')'
                     | id
                     | funcCall
                     ;
-assignStmt	        : id '=' expr
+assignStmt	        : id Assign expr
                     ;
-funcCall	        : id '(' aParamList? ')'
+funcCall	        : id Parenl aParamList? Parenr
                     ;
-conditionDcl        : 'condition' id '(' fParamList? ')' funcBody
+conditionDcl        : Condition id Parenl fParamList? Parenr funcBody
                     ;
-aParamList          : expr (',' aParamList)?
+aParamList          : expr (Comma aParamList)?
                     ;
-ctrlStruct          : if (elseif)* (else)?
-                    | 'for' '(' (dcl | Val | id) ('upto' | 'downto') (Val | id)')' funcBody
-                    | 'while' '('expr')' funcBody
+ctrlStruct          : aif (aelseif)* (aelse)?
+                    | For Parenl (dcl | Val | id) (Upto | Downto) (Val | id) Parenr funcBody
+                    | While Parenl expr Parenr funcBody
                     | routine
                     ;
-if                  : 'if' '(' expr ')' funcBody
+aif                  : If Parenl expr Parenr funcBody
                     ;
-elseif              : 'else if' '(' expr ')'  funcBody
+aelseif              : Elseif Parenl expr Parenl  funcBody
                     ;
-else                : 'else'  funcBody
+aelse                : Else  funcBody
                     ;
 eParam  	        : EType id
                     ;
-id                  : Name ( '.' id)?
-                    | Name '[' Val ']'
+id                  : Name ( Dot id)?
+                    | Name Squarel Val Squarer
                     ;
