@@ -1,6 +1,7 @@
 package Antlr;
 
-public class ASTVisitor{
+public class ASTVisitor
+{
 
 
 }
