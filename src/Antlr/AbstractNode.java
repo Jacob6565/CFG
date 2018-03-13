@@ -13,6 +13,19 @@ enum Color{
 //end enums - begin abstract classes
 abstract class AbstractNode
 {
+    //Should contain management functions.
+    public void connectSibling()
+    {
+
+    }
+    public void adoptChildren()
+    {
+
+    }
+    public void traverseAST()
+    {
+
+    }
 
 }
 
