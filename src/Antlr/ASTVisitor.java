@@ -1,5 +1,7 @@
 package Antlr;
 
+//Så skal man lave en klasse som nedarver denne klasse og som implementerer
+//en traverse metode for dem alle fx depth-first, som er standarden.
 public abstract class ASTVisitor<T>
 {
     //Har en overloaded visitmetoder for hver node.
