@@ -48,6 +48,7 @@ abstract class ControlStructureNode extends AbstractNode{
 
 abstract class InfixExpressionNode extends ExpressionNode{
     public ExpressionNode LeftChild;
+
     public ExpressionNode RightChild;
 }
 
@@ -152,7 +153,7 @@ class TypeFuncCallNode extends ExpressionNode{
 }
 
 class IdNode extends ExpressionNode{
-
+    public String Value;
 }
 
 //end expressions - begin Statements
