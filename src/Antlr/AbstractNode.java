@@ -1,7 +1,7 @@
 package Antlr;
 
-import java.beans.Statement;
 
+//begin enums
 enum Color{
     red,
     blue,
@@ -10,6 +10,7 @@ enum Color{
     black,
     white
 }
+//end enums - begin abstract classes
 abstract class AbstractNode
 {
 
@@ -24,19 +25,7 @@ abstract class StatementNode extends  AbstractNode{
 
 }
 
-abstract class FunctionDeclarationNode extends AbstractNode{
-
-}
-
-abstract class StrategyDeclarationNode extends AbstractNode{
-
-}
-
 abstract class DeclarationNode extends AbstractNode{
-
-}
-
-abstract class ConditionDeclarationNode extends AbstractNode{
 
 }
 
@@ -49,11 +38,7 @@ abstract class InfixExpressionNode extends ExpressionNode{
     public ExpressionNode RightChild;
 }
 
-
-
-
-
-
+//End abstract classes - begin control structures
 
 class IfControlStructureNode extends ControlStructureNode{
 
@@ -70,6 +55,8 @@ class ForNode extends  ControlStructureNode{
 class RoutineNode extends ControlStructureNode{
 
 }
+
+//End control-structures - begin RobotProperties
 
 class RobotPropertiesNode extends AbstractNode{
     public TextNode Name;
@@ -91,6 +78,8 @@ class RadarColorNode extends AbstractNode{
     public ColorValNode Color;
 }
 
+//end RobotProperties - begin Types
+
 class TextNode extends AbstractNode{
     public String Content;
 }
@@ -104,8 +93,10 @@ class NumberNode extends ExpressionNode{
 }
 
 class BoolNode extends ExpressionNode{
-
+    public boolean Value;
 }
+
+//end types - begin expressions
 
 class AdditionNode extends InfixExpressionNode{
 
@@ -143,17 +134,30 @@ class ModuloNode extends InfixExpressionNode{
 
 }
 
-class AssignNode extends StatementNode{
+class TypeFuncCallNode extends ExpressionNode{
 
 }
 
-class FuncCallNode extends StatementNode{
+class IdNode extends ExpressionNode{
+
+}
+
+//end expressions - begin Statements
+
+class AssignNode extends StatementNode{
+    public IdNode Id;
+    public ExpressionNode Expression;
+}
+
+class VoidFuncCallNode extends StatementNode{
 
 }
 
 class ReturnNode extends StatementNode{
 
 }
+
+//end statements begin declarations
 
 class NumberDeclarationNode extends DeclarationNode{ //Jeg ved ikke om vi skal lave typechecking endnu
 
@@ -164,5 +168,23 @@ class TextDeclarationNode extends DeclarationNode{
 }
 
 class BooleanDeclarationNode extends DeclarationNode{
+
+}
+
+//end declarations - begin Scope nodes
+
+class WhenNode extends AbstractNode{
+
+}
+
+class ConditionDeclarationNode extends AbstractNode{
+
+}
+
+class FunctionDeclarationNode extends AbstractNode{
+
+}
+
+class StrategyDeclarationNode extends AbstractNode{
 
 }
