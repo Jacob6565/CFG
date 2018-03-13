@@ -132,6 +132,10 @@ class PowerNode extends InfixExpressionNode{
     /* ex 3^4 */
 }
 
+class NegateNode extends ExpressionNode{
+    // ex -34;
+}
+
 class NotNode extends ExpressionNode{
     public ExpressionNode Expression;
 }
